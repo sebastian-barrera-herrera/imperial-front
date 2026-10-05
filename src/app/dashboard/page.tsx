@@ -1,13 +1,13 @@
 'use client';
 
-import { ArrowRight, CheckCircle2, Circle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Circle, UserRoundCheck, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { Badge, Card, DisbursementBadge, PageHeader, PageLoader, StatTile, cn } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { dateTime, money } from '@/lib/format';
 import { useFetch } from '@/lib/hooks';
 import { useOnLive } from '@/lib/realtime';
-import { CASE_STAGE_LABELS, STAGE_ORDER, type AppNotification, type CaseItem, type Disbursement, type DocumentItem, type DocumentSummary, type Paged, type Profile } from '@/lib/types';
+import { CASE_STAGE_LABELS, STAGE_ORDER, type Advisor, type AppNotification, type CaseItem, type DepositsView, type Disbursement, type DocumentItem, type DocumentSummary, type Paged, type Profile } from '@/lib/types';
 
 export default function DashboardHome() {
   const { user } = useAuth();
@@ -16,12 +16,16 @@ export default function DashboardHome() {
   const disb = useFetch<Disbursement[]>('/disbursements');
   const cases = useFetch<CaseItem[]>('/cases');
   const alerts = useFetch<Paged<AppNotification> & { unread: number }>('/notifications?pageSize=5');
+  const advisor = useFetch<Advisor>('/advisor');
+  const deposits = useFetch<DepositsView>('/deposits');
 
   useOnLive(() => {
     void docs.reload();
     void disb.reload();
     void cases.reload();
     void alerts.reload();
+    void advisor.reload();
+    void deposits.reload();
   });
 
   if (profile.loading || docs.loading || disb.loading || cases.loading) return <PageLoader />;
@@ -63,6 +67,25 @@ export default function DashboardHome() {
           </ul>
         </Card>
       )}
+
+      <div className="mb-4 grid gap-4 sm:grid-cols-2">
+        <Card className="flex items-center gap-4 p-5">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-700"><UserRoundCheck className="h-6 w-6" aria-hidden /></span>
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Tu asesor profesional</p>
+            {advisor.data ? <p className="truncate text-lg font-semibold text-slate-900">{advisor.data.name}</p> : <p className="text-sm text-slate-600">{advisor.loading ? 'Cargando…' : 'El despacho te asignará un asesor muy pronto.'}</p>}
+            {advisor.data && <p className="text-xs text-slate-500">Te atiende en Imperial Law Group</p>}
+          </div>
+        </Card>
+        <Card className="flex items-center gap-4 p-5">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-700"><Wallet className="h-6 w-6" aria-hidden /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Valor depositado</p>
+            <p className="text-lg font-semibold text-slate-900">{deposits.data ? money(deposits.data.total, deposits.data.currency) : '—'}</p>
+          </div>
+          <Link href="/dashboard/depositos" className="text-sm font-medium text-navy-700 underline">Ver historial</Link>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Documentos en revisión" value={pendingDocs} hint={rejectedDocs ? `${rejectedDocs} rechazado(s) por corregir` : undefined} tone={rejectedDocs ? 'alert' : 'default'} />

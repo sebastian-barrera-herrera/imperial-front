@@ -12,7 +12,8 @@ export function SiteFooter() {
           <Logo variant="mark" width={44} />
           <p className="mt-2 font-semibold uppercase tracking-[0.16em] text-slate-800">{site.name}</p>
           <p className="mt-1">Las proyecciones, valoraciones y estimaciones mostradas en la plataforma son informativas y no constituyen garantía de resultados. Toda inversión implica riesgo.</p>
-          <p className="mt-2">Contacto: <a className="underline" href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a></p>
+          <p className="mt-2">{site.legal.city} · Atendemos a toda Latinoamérica</p>
+          <p className="mt-1">Contacto: <a className="underline" href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a></p>
         </div>
         <nav aria-label="Información legal" className="flex flex-col gap-2 md:items-end">
           <Link className="underline" href="/aviso-de-privacidad">Aviso de privacidad</Link>

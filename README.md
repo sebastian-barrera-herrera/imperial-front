@@ -10,9 +10,11 @@ El navegador solo habla con Next: `/api/*` se reenvía a la API mediante `rewrit
 
 - **Sitio público:** landing (cómo funciona, inversión, equipo, testimonios), login, registro con consentimiento, **aviso de privacidad** y **política de privacidad**.
 - **Área de clientes:** perfil, documentos (carga con progreso), solicitudes de desembolso, seguimiento de casos con línea de tiempo, alertas en tiempo real, capital e inversión con simulador, **Mi portafolio** y configuración.
-- **Documento de aprobación (PDF):** el cliente descarga desde el detalle de su desembolso aprobado una constancia profesional con logo, marca de agua, monto en cifras y letras y **código de verificación con QR**. La página pública `/verificar` confirma que el documento es auténtico y vigente (sin mostrar datos personales).
+- **Documento de aprobación (PDF):** el superadmin define sus datos (emisor, entidad financiera, fecha de solicitud, firmante, lugar, observaciones) y lo habilita; el cliente descarga desde el detalle de su desembolso aprobado una constancia profesional con logo, marca de agua, monto en cifras y letras y **código de verificación con QR**. La página pública `/verificar` confirma que el documento es auténtico y vigente (sin mostrar datos personales).
 - **Documentos del despacho:** el superadmin entrega contratos, constancias, resoluciones, etc. a un cliente (ficha del cliente → «Documentos del despacho»); el cliente recibe una alerta y los ve en *Mis documentos → Recibidos del despacho*.
 - **Editor de imágenes (superadmin):** sube una imagen, selecciona un texto, escribe el nuevo y descárgala. El fondo se reconstruye a partir de los píxeles de alrededor (fondos lisos y degradados quedan limpios); el tipo de letra se elige entre cuatro familias, así que el parecido con el original es aproximado. El original nunca se modifica y cada versión y descarga queda registrada. Pensado para piezas propias del despacho, no para documentos de terceros.
+- **Asesor, depósitos y bajas:** cada cliente ve en su Inicio el nombre de su **asesor profesional** y su **valor depositado** (con historial en *Mis depósitos*), que registra el superadmin. El superadmin ve la **lista de clientes con sus datos** (país, asesor, depositado, estado) y puede **darlos de baja** —pierden el acceso al instante, se conservan sus datos— o reactivarlos.
+- **Miami y toda Latinoamérica:** el despacho está en Miami; el sitio, el PDF y los textos legales lo reflejan (incluida la transferencia internacional de datos a EE. UU.) y el perfil pide el país del cliente.
 - **Panel interno:** KPIs y gráficos, clientes, validación de documentos, desembolsos, casos, alertas, capital (oportunidades, valoraciones, inversiones y rescates), usuarios y roles, reportes CSV y auditoría.
 - **Portafolio del inversionista:** valor actual, ganancia, rendimiento anualizado, gráfico interactivo (puntero, táctil y teclado, rangos 1M–Todo, tabla equivalente), distribución, posiciones con tendencia y ficha de rendimiento por oportunidad.
 - **Animaciones sutiles:** entrada escalonada de la portada, aparición al hacer scroll (`src/components/Reveal.tsx`), líneas de los gráficos que se dibujan, tarjetas que se elevan al pasar el cursor, cabecera que gana sombra y transición entre páginas del panel. Solo CSS más un `IntersectionObserver`; sin dependencias. Se desactivan con «reducir movimiento» del sistema y, sin JavaScript, todo el contenido se ve igual. Los estilos están al final de `src/app/globals.css`.
@@ -40,7 +42,7 @@ Se leen al **compilar** (`next build`/`next dev`).
 | `API_URL` | URL interna de la API (por defecto `http://localhost:4000`). |
 | `NEXT_PUBLIC_SITE_NAME` | Nombre mostrado (por defecto *Imperial Law Group*). |
 | `NEXT_PUBLIC_LEGAL_ENTITY` | Razón social completa para los textos legales. |
-| `NEXT_PUBLIC_LEGAL_ADDRESS` | Dirección física (si se define, aparece en el aviso y la política). |
+| `NEXT_PUBLIC_LEGAL_ADDRESS` | Dirección física del despacho (por defecto «Miami, Florida, Estados Unidos de América»; agrega la calle completa si quieres mostrarla en el aviso y la política). |
 | `NEXT_PUBLIC_CONTACT_EMAIL` / `NEXT_PUBLIC_PRIVACY_EMAIL` | Correos de contacto y de privacidad. |
 | `NEXT_PUBLIC_SITE_URL` | URL pública (imagen al compartir en redes). |
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, Bell, Briefcase, FileText, Home, Landmark, LineChart, Settings, UserRound } from 'lucide-react';
+import { Banknote, Bell, Briefcase, FileText, Home, Landmark, LineChart, Settings, UserRound, Wallet } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Shell, type NavItem } from '@/components/Shell';
 import { PageLoader } from '@/components/ui';
@@ -11,6 +11,7 @@ const NAV: NavItem[] = [
   { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
   { href: '/dashboard/perfil', label: 'Mi Perfil', icon: UserRound },
   { href: '/dashboard/documentos', label: 'Mis Documentos', icon: FileText },
+  { href: '/dashboard/depositos', label: 'Mis Depósitos', icon: Wallet },
   { href: '/dashboard/desembolsos', label: 'Solicitudes de Desembolso', icon: Banknote },
   { href: '/dashboard/casos', label: 'Seguimiento de Casos', icon: Briefcase },
   { href: '/dashboard/alertas', label: 'Alertas y Notificaciones', icon: Bell, alerts: true },

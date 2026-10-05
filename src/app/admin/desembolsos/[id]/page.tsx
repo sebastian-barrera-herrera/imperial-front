@@ -1,14 +1,15 @@
 'use client';
 
-import { ArrowLeft, Download, FileDown, FileText } from 'lucide-react';
+import { ArrowLeft, Download, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useToast } from '@/components/toast';
 import { Button, Card, DisbursementBadge, DocStatusBadge, ErrorBox, Field, Modal, PageLoader, Timeline } from '@/components/ui';
-import { api, downloadFile } from '@/lib/api';
+import { api } from '@/lib/api';
 import { dateTime, fileSize, money } from '@/lib/format';
 import { useFetch } from '@/lib/hooks';
+import { ApprovalDocumentCard } from './ApprovalDocumentCard';
 import { DISBURSEMENT_STATUS_LABELS, DISBURSEMENT_TRANSITIONS, DOC_CATEGORY_LABELS, type Disbursement, type DisbursementStatus } from '@/lib/types';
 
 export default function AdminDisbursementDetail() {
@@ -18,7 +19,6 @@ export default function AdminDisbursementDetail() {
   const [target, setTarget] = useState<DisbursementStatus | null>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [pdfBusy, setPdfBusy] = useState(false);
 
   if (loading && !data) return <PageLoader />;
   if (error || !data) return <ErrorBox message={error ?? 'Solicitud no encontrada'} />;
@@ -41,23 +41,12 @@ export default function AdminDisbursementDetail() {
     }
   }
 
-  async function downloadApproval() {
-    setPdfBusy(true);
-    try {
-      await downloadFile(`/admin/disbursements/${id}/approval-pdf`, `Aprobacion-${data?.code ?? 'desembolso'}.pdf`);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setPdfBusy(false);
-    }
-  }
-
   return (
     <>
       <Link href="/admin/desembolsos" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-navy-800"><ArrowLeft className="h-4 w-4" /> Volver a desembolsos</Link>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div><h1 className="text-2xl font-semibold">{data.code}</h1><p className="mt-1 text-slate-600">{data.concept}</p></div>
-        <div className="flex flex-wrap items-center gap-3"><DisbursementBadge status={data.status} />{['APPROVED', 'IN_PROCESS', 'DISBURSED'].includes(data.status) && <Button variant="outline" onClick={downloadApproval} loading={pdfBusy}><FileDown className="h-4 w-4" aria-hidden /> Documento de aprobación (PDF)</Button>}</div>
+        <div className="flex flex-wrap items-center gap-3"><DisbursementBadge status={data.status} /></div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -73,6 +62,8 @@ export default function AdminDisbursementDetail() {
               <div><dt className="text-slate-500">Desembolsada</dt><dd>{dateTime(data.disbursedAt)}</dd></div>
             </dl>
           </Card>
+
+          {['APPROVED', 'IN_PROCESS', 'DISBURSED'].includes(data.status) && <ApprovalDocumentCard id={id} code={data.code} />}
 
           <Card className="p-5">
             <h2 className="text-lg font-semibold">Documentos adjuntos</h2>

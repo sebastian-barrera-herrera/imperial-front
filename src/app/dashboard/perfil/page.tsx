@@ -7,10 +7,11 @@ import { Button, Card, ErrorBox, Field, PageHeader, PageLoader } from '@/compone
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useFetch } from '@/lib/hooks';
+import { COUNTRIES } from '@/lib/countries';
 import { ACCOUNT_TYPE_LABELS, type Profile } from '@/lib/types';
 
-type Form = { fullName: string; cedula: string; phone: string; address: string; city: string; bankName: string; accountType: string; accountNumber: string };
-const toForm = (p: Profile): Form => ({ fullName: p.fullName, cedula: p.cedula ?? '', phone: p.phone ?? '', address: p.address ?? '', city: p.city ?? '', bankName: p.bankName ?? '', accountType: p.accountType ?? '', accountNumber: '' });
+type Form = { fullName: string; cedula: string; phone: string; address: string; city: string; country: string; bankName: string; accountType: string; accountNumber: string };
+const toForm = (p: Profile): Form => ({ fullName: p.fullName, cedula: p.cedula ?? '', phone: p.phone ?? '', address: p.address ?? '', city: p.city ?? '', country: p.country ?? '', bankName: p.bankName ?? '', accountType: p.accountType ?? '', accountNumber: '' });
 
 export default function ProfilePage() {
   const toast = useToast();
@@ -60,8 +61,9 @@ export default function ProfilePage() {
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Nombre completo">{(id) => <input id={id} className="input" value={form.fullName} onChange={set('fullName')} disabled={readOnly} required minLength={3} />}</Field>
             <Field label="Correo de contacto" hint="Para cambiar el correo contacta a tu abogado.">{(id) => <input id={id} className="input" value={data.email} disabled />}</Field>
-            <Field label="Cédula de identidad">{(id) => <input id={id} className="input" value={form.cedula} onChange={set('cedula')} disabled={readOnly} inputMode="numeric" pattern="[A-Za-z0-9.\-]{5,20}" title="5 a 20 caracteres: letras, números, punto o guion" />}</Field>
-            <Field label="Teléfono">{(id) => <input id={id} type="tel" className="input" value={form.phone} onChange={set('phone')} disabled={readOnly} placeholder="+código de país y número" />}</Field>
+            <Field label="Documento de identidad" hint="Cédula, DNI, CURP, RUT, pasaporte…">{(id) => <input id={id} className="input" value={form.cedula} onChange={set('cedula')} disabled={readOnly} pattern="[A-Za-z0-9.\-]{5,20}" title="5 a 20 caracteres: letras, números, punto o guion" />}</Field>
+            <Field label="País de residencia">{(id) => <select id={id} className="input" value={form.country} onChange={set('country')} disabled={readOnly}><option value="">Selecciona tu país</option>{COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}</select>}</Field>
+            <Field label="Teléfono">{(id) => <input id={id} type="tel" className="input" value={form.phone} onChange={set('phone')} disabled={readOnly} placeholder="+57 300 123 4567" />}</Field>
             <Field label="Ciudad">{(id) => <input id={id} className="input" value={form.city} onChange={set('city')} disabled={readOnly} />}</Field>
             <Field label="Dirección">{(id) => <input id={id} className="input" value={form.address} onChange={set('address')} disabled={readOnly} />}</Field>
           </div>

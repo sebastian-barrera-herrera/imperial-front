@@ -11,7 +11,7 @@ export type NotificationType = 'DOCUMENT' | 'DISBURSEMENT' | 'CASE' | 'OPPORTUNI
 
 export type Profile = {
   id: string; email: string; fullName: string; cedula: string | null; phone: string | null; address: string | null; city: string | null;
-  bankName: string | null; accountType: string | null; accountNumberMasked: string | null; hasBankAccount: boolean;
+  bankName: string | null; accountType: string | null; accountNumberMasked: string | null; hasBankAccount: boolean; country: string | null;
 };
 
 export type DocumentItem = {
@@ -28,6 +28,8 @@ export type Disbursement = {
   case?: { id?: string; number: string; title?: string } | null;
   events?: DisbursementEvent[]; documents?: Pick<DocumentItem, 'id' | 'category' | 'originalName' | 'status' | 'size' | 'createdAt'>[];
   client?: { id: string; fullName: string; email: string }; _count?: { documents: number };
+  /** El cliente solo puede descargar el documento de aprobación cuando el superadmin lo habilitó. */
+  approvalPdfAvailable?: boolean;
 };
 
 export type CaseEvent = { id: string; stage: CaseStage; title: string; description: string | null; actorName: string | null; createdAt: string };
@@ -140,3 +142,18 @@ export type IssuedDocument = {
 export type StudioImage = { id: string; title: string; originalName: string; mime: string; size: number; createdAt: string; createdByEmail: string | null; versionCount: number; latestVersionId: string | null };
 export type StudioVersion = { id: string; version: number; label: string; size: number; sha256: string; edits: unknown; createdAt: string; createdByEmail: string | null };
 export type StudioImageDetail = StudioImage & { originalSha256: string; versions: StudioVersion[] };
+
+// ───────────── Documento de aprobación, asesor y depósitos ─────────────
+export type ApprovalDocFields = {
+  issuerName: string; signerName: string | null; signerTitle: string | null; financialEntity: string; accountLast4: string | null;
+  requestDate: string; issuePlace: string; notes: string | null;
+};
+export type ApprovalDocView = {
+  eligible: boolean; configured: boolean; released: boolean; releasedAt: string | null; releasedBy: string | null; updatedAt: string | null; updatedBy: string | null;
+  approvedAt: string | null; approvedOn: string | null; fields: ApprovalDocFields; defaults: ApprovalDocFields;
+};
+export type Deposit = { id: string; amount: string; currency: string; depositedAt: string; reference: string | null; note: string | null; createdAt: string };
+export type DepositsView = { currency: string; total: string; items: Deposit[] };
+export type AdminDepositsView = DepositsView & { client: { id: string; fullName: string; email: string } };
+export type Advisor = { name: string; source: 'assigned' | 'case' } | null;
+export type Staff = { id: string; fullName: string; email: string; role: 'SUPERADMIN' | 'LAWYER' };

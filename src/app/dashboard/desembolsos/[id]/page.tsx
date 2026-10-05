@@ -57,7 +57,7 @@ export default function DisbursementDetail() {
           <h1 className="text-2xl font-semibold">{data.code}</h1>
           <p className="mt-1 text-slate-600">{data.concept}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3"><DisbursementBadge status={data.status} />{['APPROVED', 'IN_PROCESS', 'DISBURSED'].includes(data.status) && <Button onClick={downloadApproval} loading={pdfBusy}><FileDown className="h-4 w-4" aria-hidden /> Documento de aprobación (PDF)</Button>}{data.status === 'PENDING' && <Button variant="outline" onClick={() => setConfirm(true)}>Cancelar solicitud</Button>}</div>
+        <div className="flex flex-wrap items-center gap-3"><DisbursementBadge status={data.status} />{data.approvalPdfAvailable && <Button onClick={downloadApproval} loading={pdfBusy}><FileDown className="h-4 w-4" aria-hidden /> Documento de aprobación (PDF)</Button>}{data.status === 'PENDING' && <Button variant="outline" onClick={() => setConfirm(true)}>Cancelar solicitud</Button>}</div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -73,6 +73,9 @@ export default function DisbursementDetail() {
               <div><dt className="text-slate-500">Caso asociado</dt><dd>{data.case ? <Link className="text-navy-700 underline" href={`/dashboard/casos/${data.case.id}`}>{data.case.number}</Link> : '—'}</dd></div>
             </dl>
             {data.adminNote && <p className="mt-4 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700"><strong>Nota del equipo:</strong> {data.adminNote}</p>}
+            {['APPROVED', 'IN_PROCESS', 'DISBURSED'].includes(data.status) && !data.approvalPdfAvailable && (
+              <p className="mt-4 rounded-lg bg-gold-50 px-3 py-2 text-sm text-gold-900">Estamos preparando tu documento de aprobación. Te avisaremos cuando puedas descargarlo.</p>
+            )}
           </Card>
 
           <Card className="p-5">

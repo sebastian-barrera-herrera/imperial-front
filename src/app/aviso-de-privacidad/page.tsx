@@ -10,7 +10,7 @@ export default function PrivacyNoticePage() {
   return (
     <LegalPage title="Aviso de privacidad" intro={`${legal.entityName} (“el Despacho”) te informa de forma resumida cómo trata tus datos personales cuando usas esta plataforma. Para el detalle completo consulta la Política de privacidad.`}>
       <h2 id="responsable">Responsable</h2>
-      <p><strong>{legal.entityName}</strong>{legal.address ? <>, con domicilio en {legal.address}</> : null}. Para cualquier asunto sobre tus datos escríbenos a <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>.</p>
+      <p><strong>{legal.entityName}</strong>{legal.address ? <>, con domicilio en {legal.address}</> : null}. Atendemos a clientes de toda Latinoamérica desde Miami, por lo que <strong>tus datos se tratan y almacenan en Estados Unidos</strong>. Para cualquier asunto sobre tus datos escríbenos a <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>.</p>
 
       <h2 id="datos">Datos que tratamos</h2>
       <ul>

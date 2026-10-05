@@ -69,7 +69,8 @@ export default function PrivacyPolicyPage() {
       <p>Dentro del Despacho, el acceso se limita al personal que lo necesita según su función, y las consultas a datos personales quedan registradas.</p>
 
       <h2 id="transferencias">6. Transferencias internacionales</h2>
-      <p>Algunos proveedores pueden tratar datos en servidores ubicados fuera de tu país de residencia. Cuando eso ocurra, exigiremos garantías contractuales y técnicas razonables para proteger tus datos de forma equivalente a esta política y a la normativa aplicable.</p>
+      <p>El Despacho tiene su sede en <strong>{site.headquarters}, Estados Unidos</strong> y atiende a clientes de toda Latinoamérica. Por eso, <strong>tus datos se tratan y se almacenan en Estados Unidos</strong> (y en los servidores de los proveedores que usamos), que puede ser un país distinto al de tu residencia y con un nivel de protección de datos diferente. Al registrarte y usar la plataforma entiendes y aceptas esta transferencia, necesaria para prestarte el servicio.</p>
+      <p>Cuando los datos se traten fuera de tu país de residencia, aplicaremos garantías contractuales y técnicas razonables (acuerdos con proveedores, cifrado y control de accesos) para protegerlos de forma equivalente a esta política y a la normativa que te sea aplicable. Mantienes tus derechos aunque tus datos se traten en Estados Unidos.</p>
 
       <h2 id="seguridad">7. Cómo protegemos tus datos</h2>
       <ul>

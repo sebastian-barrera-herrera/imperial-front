@@ -82,9 +82,9 @@ export default async function Home() {
         <div aria-hidden className="glow -z-10" />
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-5 lg:py-24">
           <div className="lg:col-span-3">
-            <p className="anim-rise mb-4 inline-block rounded-full border border-cream/30 px-3 py-1 text-xs font-medium uppercase tracking-widest text-cream/80">Despacho de abogados</p>
+            <p className="anim-rise mb-4 inline-block rounded-full border border-cream/30 px-3 py-1 text-xs font-medium uppercase tracking-widest text-cream/80">Despacho de abogados · {site.headquarters}</p>
             <h1 className="anim-rise font-serif text-3xl [--d:90ms] font-semibold leading-tight !text-cream sm:text-5xl">Recupera tu capital con acompañamiento legal de principio a fin</h1>
-            <p className="anim-rise mt-5 max-w-xl text-base text-night-200 [--d:180ms] sm:text-lg">Gestiona tu caso, carga tus documentos, solicita desembolsos y consulta el avance en una plataforma segura y clara.</p>
+            <p className="anim-rise mt-5 max-w-xl text-base text-night-200 [--d:180ms] sm:text-lg">Desde Miami, para toda Latinoamérica: gestiona tu caso, carga tus documentos, solicita desembolsos y consulta el avance en una plataforma segura y clara.</p>
             <div className="anim-rise mt-8 flex flex-col gap-3 [--d:270ms] sm:flex-row">
               <Link href="/register" className="btn-cream group px-6 py-3 text-base">Comenzar ahora <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden /></Link>
               <Link href="/login" className="btn border border-night-500 px-6 py-3 text-base text-white hover:bg-night-800">Ya tengo cuenta</Link>
