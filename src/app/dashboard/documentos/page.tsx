@@ -1,14 +1,15 @@
 'use client';
 
-import { Download, FileText, Trash2, UploadCloud } from 'lucide-react';
-import { useRef, useState, type DragEvent } from 'react';
+import { Download, FileText, Inbox, Trash2, UploadCloud } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useRef, useState, type DragEvent } from 'react';
 import { useToast } from '@/components/toast';
-import { Button, Card, ConfirmModal, DocStatusBadge, EmptyState, ErrorBox, PageHeader, PageLoader, Tabs, cn } from '@/components/ui';
-import { api, uploadFile } from '@/lib/api';
+import { Badge, Button, Card, ConfirmModal, DocStatusBadge, EmptyState, ErrorBox, PageHeader, PageLoader, Tabs, cn } from '@/components/ui';
+import { api, downloadFile, uploadFile } from '@/lib/api';
 import { dateTime, fileSize } from '@/lib/format';
 import { useFetch } from '@/lib/hooks';
 import { useOnLive } from '@/lib/realtime';
-import { DOC_CATEGORY_LABELS, type DocumentCategory, type DocumentItem, type DocumentSummary } from '@/lib/types';
+import { DOC_CATEGORY_LABELS, ISSUED_CATEGORY_LABELS, type DocumentCategory, type DocumentItem, type DocumentSummary, type IssuedDocument } from '@/lib/types';
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const ACCEPT = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -21,7 +22,7 @@ const HINTS: Record<DocumentCategory, string> = {
 
 type Upload = { name: string; percent: number; error?: string };
 
-export default function DocumentsPage() {
+function MyFiles() {
   const toast = useToast();
   const [category, setCategory] = useState<DocumentCategory>('IDENTITY');
   const { data, error, loading, reload } = useFetch<{ items: DocumentItem[]; summary: DocumentSummary[] }>('/documents');
@@ -83,8 +84,6 @@ export default function DocumentsPage() {
 
   return (
     <>
-      <PageHeader title="Mis documentos" description="Sube tus archivos por categoría. Nuestro equipo los revisa y te avisa el resultado en tiempo real." />
-
       <Tabs tabs={tabs} value={category} onChange={setCategory} />
 
       <div className="mt-5 grid gap-6 lg:grid-cols-3">
@@ -147,4 +146,64 @@ export default function DocumentsPage() {
         message={<>¿Seguro que quieres eliminar <strong>{toDelete?.originalName}</strong>? Esta acción no se puede deshacer.</>} />
     </>
   );
+}
+
+/** Documentos que el despacho le entregó al cliente (contratos, constancias, resoluciones…). */
+function ReceivedFiles({ items, reload }: { items: IssuedDocument[]; reload: () => Promise<void> }) {
+  const toast = useToast();
+  async function download(d: IssuedDocument) {
+    try {
+      await downloadFile(`/issued-documents/${d.id}/download`, d.originalName);
+      await reload(); // la primera descarga lo marca como visto
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+  return (
+    <Card>
+      {items.length === 0 ? (
+        <EmptyState icon={<Inbox className="h-10 w-10" />} title="Aún no has recibido documentos del despacho">Cuando nuestro equipo te entregue un contrato, una constancia u otro documento, aparecerá aquí y recibirás una alerta.</EmptyState>
+      ) : (
+        <ul className="divide-y divide-slate-100">
+          {items.map((d) => (
+            <li key={d.id} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center">
+              <FileText className="hidden h-8 w-8 shrink-0 text-navy-300 sm:block" aria-hidden />
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-900">{d.title}{!d.viewedAt && <Badge tone="blue">Nuevo</Badge>}</p>
+                <p className="text-xs text-slate-500">{ISSUED_CATEGORY_LABELS[d.category]} · {fileSize(d.size)} · recibido {dateTime(d.createdAt)}{d.case ? ` · Caso ${d.case.number}` : ''}</p>
+                {d.description && <p className="mt-1 text-sm text-slate-600">{d.description}</p>}
+              </div>
+              <Button variant="outline" onClick={() => void download(d)} aria-label={`Descargar ${d.title}`}><Download className="h-4 w-4" aria-hidden /> Descargar</Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
+function DocumentsPage() {
+  const params = useSearchParams();
+  const [view, setView] = useState<'mine' | 'received'>(params.get('tab') === 'recibidos' ? 'received' : 'mine');
+  const received = useFetch<IssuedDocument[]>('/issued-documents');
+  useOnLive((e) => (e.type === 'refresh' || e.data.type === 'DOCUMENT') && void received.reload());
+  const unread = (received.data ?? []).filter((d) => !d.viewedAt).length;
+  return (
+    <>
+      <PageHeader title="Mis documentos" description="Sube tus archivos para su validación y consulta los documentos que el despacho te entrega." />
+      <div className="mb-5 inline-flex rounded-xl border border-slate-200 bg-surface p-1" role="tablist" aria-label="Tipo de documentos">
+        {([['mine', 'Mis archivos'], ['received', 'Recibidos del despacho']] as const).map(([id, label]) => (
+          <button key={id} role="tab" aria-selected={view === id} onClick={() => setView(id)}
+            className={cn('rounded-lg px-4 py-2 text-sm font-medium transition', view === id ? 'bg-brand text-white' : 'text-slate-600 hover:bg-slate-100')}>
+            {label}{id === 'received' && unread > 0 && <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-night-900">{unread}</span>}
+          </button>
+        ))}
+      </div>
+      {view === 'mine' ? <MyFiles /> : received.loading && !received.data ? <PageLoader /> : received.error ? <ErrorBox message={received.error} onRetry={received.reload} /> : <ReceivedFiles items={received.data ?? []} reload={received.reload} />}
+    </>
+  );
+}
+
+export default function DocumentsRoute() {
+  return <Suspense fallback={<PageLoader />}><DocumentsPage /></Suspense>;
 }

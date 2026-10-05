@@ -10,6 +10,9 @@ El navegador solo habla con Next: `/api/*` se reenvía a la API mediante `rewrit
 
 - **Sitio público:** landing (cómo funciona, inversión, equipo, testimonios), login, registro con consentimiento, **aviso de privacidad** y **política de privacidad**.
 - **Área de clientes:** perfil, documentos (carga con progreso), solicitudes de desembolso, seguimiento de casos con línea de tiempo, alertas en tiempo real, capital e inversión con simulador, **Mi portafolio** y configuración.
+- **Documento de aprobación (PDF):** el cliente descarga desde el detalle de su desembolso aprobado una constancia profesional con logo, marca de agua, monto en cifras y letras y **código de verificación con QR**. La página pública `/verificar` confirma que el documento es auténtico y vigente (sin mostrar datos personales).
+- **Documentos del despacho:** el superadmin entrega contratos, constancias, resoluciones, etc. a un cliente (ficha del cliente → «Documentos del despacho»); el cliente recibe una alerta y los ve en *Mis documentos → Recibidos del despacho*.
+- **Editor de imágenes (superadmin):** sube una imagen, selecciona un texto, escribe el nuevo y descárgala. El fondo se reconstruye a partir de los píxeles de alrededor (fondos lisos y degradados quedan limpios); el tipo de letra se elige entre cuatro familias, así que el parecido con el original es aproximado. El original nunca se modifica y cada versión y descarga queda registrada. Pensado para piezas propias del despacho, no para documentos de terceros.
 - **Panel interno:** KPIs y gráficos, clientes, validación de documentos, desembolsos, casos, alertas, capital (oportunidades, valoraciones, inversiones y rescates), usuarios y roles, reportes CSV y auditoría.
 - **Portafolio del inversionista:** valor actual, ganancia, rendimiento anualizado, gráfico interactivo (puntero, táctil y teclado, rangos 1M–Todo, tabla equivalente), distribución, posiciones con tendencia y ficha de rendimiento por oportunidad.
 - **Animaciones sutiles:** entrada escalonada de la portada, aparición al hacer scroll (`src/components/Reveal.tsx`), líneas de los gráficos que se dibujan, tarjetas que se elevan al pasar el cursor, cabecera que gana sombra y transición entre páginas del panel. Solo CSS más un `IntersectionObserver`; sin dependencias. Se desactivan con «reducir movimiento» del sistema y, sin JavaScript, todo el contenido se ve igual. Los estilos están al final de `src/app/globals.css`.
@@ -54,7 +57,8 @@ Colores: **azul `#1d344a`** y **crema `#f9f8e1`** (tomados del logo). La paleta 
 ## Estructura
 
 ```
-src/app/            rutas (landing, auth, dashboard, admin, páginas legales)
+src/app/            rutas (landing, auth, dashboard, admin, verificación pública, páginas legales)
+src/lib/studio/     motor del editor de imágenes (canvas)
 src/components/     UI compartida (ui, charts, LineChart, Brand, Shell, …)
 src/content/        contenido de respaldo (equipo y testimonios) si la API aún no tiene el propio
 src/lib/            api (con renovación de sesión), auth, formato, tipos, hooks

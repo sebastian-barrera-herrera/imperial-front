@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, Bell, Briefcase, Download, FileCheck2, History, KeyRound, Landmark, LayoutDashboard, PanelsTopLeft, UserCog, Users } from 'lucide-react';
+import { Banknote, Bell, Briefcase, Download, FileCheck2, History, ImagePlus, KeyRound, Landmark, LayoutDashboard, PanelsTopLeft, UserCog, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Shell, type NavItem } from '@/components/Shell';
 import { PageLoader } from '@/components/ui';
@@ -20,6 +20,7 @@ const ACCOUNT_NAV: NavItem[] = [{ href: '/admin/cuenta', label: 'Mi cuenta', ico
 const SUPER_NAV: NavItem[] = [
   { href: '/admin/capital', label: 'Capital e inversión', icon: Landmark },
   { href: '/admin/contenido', label: 'Contenido del sitio', icon: PanelsTopLeft },
+  { href: '/admin/imagenes', label: 'Editor de imágenes', icon: ImagePlus },
   { href: '/admin/usuarios', label: 'Usuarios y roles', icon: UserCog },
   { href: '/admin/auditoria', label: 'Auditoría', icon: History },
 ];

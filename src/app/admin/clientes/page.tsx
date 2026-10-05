@@ -1,10 +1,11 @@
 'use client';
 
-import { Briefcase, Lock, Users } from 'lucide-react';
+import { Briefcase, FileUp, Lock, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Badge, Card, EmptyState, ErrorBox, Modal, PageHeader, PageLoader, Pagination, TableCard } from '@/components/ui';
 import { api } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { date } from '@/lib/format';
 import { qs, useDebounced, useFetch } from '@/lib/hooks';
 import { ACCOUNT_TYPE_LABELS, type Paged, type Profile } from '@/lib/types';
@@ -13,6 +14,7 @@ type ClientRow = { id: string; fullName: string; email: string; status: 'ACTIVE'
 type ClientDetail = Profile & { status: string; createdAt: string };
 
 export default function ClientsPage() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const debounced = useDebounced(search);
@@ -70,6 +72,7 @@ export default function ClientsPage() {
               <Link className="btn-outline" href={`/admin/documentos?ownerId=${detail.id}`}>Ver documentos</Link>
               <Link className="btn-outline" href={`/admin/desembolsos?clientId=${detail.id}`}>Ver desembolsos</Link>
               <Link className="btn-outline" href={`/admin/casos?clientId=${detail.id}`}><Briefcase className="h-4 w-4" /> Ver casos</Link>
+              {user?.role === 'SUPERADMIN' && <Link className="btn-primary" href={`/admin/clientes/${detail.id}/documentos`}><FileUp className="h-4 w-4" /> Documentos del despacho</Link>}
             </div>
           </div>
         )}

@@ -120,3 +120,23 @@ type ContentMeta = { photoUrl: string | null; published: boolean; isSample: bool
 export type AdminTeamMember = ContentMeta & { id: string; name: string; role: string; bio: string };
 export type AdminTestimonial = ContentMeta & { id: string; quote: string; author: string; kind: string };
 export type AdminContent = { team: AdminTeamMember[]; testimonials: AdminTestimonial[] };
+
+// ───────────── Documentos que el despacho entrega al cliente ─────────────
+export type IssuedCategory = 'CONTRACT' | 'RESOLUTION' | 'CERTIFICATE' | 'INVOICE' | 'REPORT' | 'OTHER';
+export const ISSUED_CATEGORY_LABELS: Record<IssuedCategory, string> = {
+  CONTRACT: 'Contrato',
+  RESOLUTION: 'Resolución o providencia',
+  CERTIFICATE: 'Certificado o constancia',
+  INVOICE: 'Factura o cuenta de cobro',
+  REPORT: 'Informe',
+  OTHER: 'Otro',
+};
+export type IssuedDocument = {
+  id: string; title: string; description: string | null; category: IssuedCategory; originalName: string; mimeType: string; size: number;
+  createdAt: string; viewedAt: string | null; case: { id: string; number: string } | null;
+};
+
+// ───────────── Editor de imágenes ─────────────
+export type StudioImage = { id: string; title: string; originalName: string; mime: string; size: number; createdAt: string; createdByEmail: string | null; versionCount: number; latestVersionId: string | null };
+export type StudioVersion = { id: string; version: number; label: string; size: number; sha256: string; edits: unknown; createdAt: string; createdByEmail: string | null };
+export type StudioImageDetail = StudioImage & { originalSha256: string; versions: StudioVersion[] };

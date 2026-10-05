@@ -90,3 +90,32 @@ export function uploadFile<T>(path: string, form: FormData, onProgress?: (percen
     return body as T;
   })();
 }
+
+/**
+ * Descarga un archivo protegido: usa la misma renovación de sesión que el resto de peticiones (un enlace directo fallaría con
+ * la sesión caducada) y respeta el nombre que sugiere la API.
+ */
+export async function downloadFile(path: string, fallbackName = 'documento'): Promise<void> {
+  let res: Response;
+  try {
+    res = await send(path, {});
+  } catch {
+    throw new ApiError(0, 'No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.');
+  }
+  if (!res.ok) {
+    const text = await res.text();
+    throw new ApiError(res.status, messageFrom(text ? safeJson(text) : null, `Error ${res.status}`));
+  }
+  const disposition = res.headers.get('content-disposition') ?? '';
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(disposition)?.[1];
+  const plain = /filename="([^"]+)"/i.exec(disposition)?.[1];
+  const name = encoded ? decodeURIComponent(encoded) : plain ?? fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
