@@ -9,22 +9,22 @@ const ORDER: Mode[] = ['light', 'dark', 'system'];
 const LABELS: Record<Mode, string> = { light: 'Tema claro', dark: 'Tema oscuro', system: 'Tema del sistema' };
 const ICONS = { light: Sun, dark: Moon, system: Monitor };
 
-/** Aplica la clase `dark` según la preferencia guardada (o la del sistema). El script inline del layout hace lo mismo antes de pintar. */
+/** Aplica la clase `dark` según la preferencia elegida. Sin elección guardada el tema es claro; «sistema» sigue al sistema operativo. El script inline del layout hace lo mismo antes de pintar. */
 function apply(mode: Mode) {
   const dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.classList.toggle('dark', dark);
 }
 
 export function ThemeToggle({ className, onDark = false }: { className?: string; onDark?: boolean }) {
-  const [mode, setMode] = useState<Mode>('system');
+  const [mode, setMode] = useState<Mode>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    let stored: Mode = 'system';
+    let stored: Mode = 'light';
     try {
       const v = localStorage.getItem('theme');
-      if (v === 'light' || v === 'dark') stored = v;
-    } catch { /* almacenamiento bloqueado: se usa el tema del sistema */ }
+      if (v === 'light' || v === 'dark' || v === 'system') stored = v;
+    } catch { /* almacenamiento bloqueado: se usa el tema claro */ }
     setMode(stored);
     setMounted(true);
   }, []);
@@ -41,8 +41,7 @@ export function ThemeToggle({ className, onDark = false }: { className?: string;
     const next = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
     setMode(next);
     try {
-      if (next === 'system') localStorage.removeItem('theme');
-      else localStorage.setItem('theme', next);
+      localStorage.setItem('theme', next);
     } catch { /* ignorado */ }
     apply(next);
   }
@@ -58,4 +57,4 @@ export function ThemeToggle({ className, onDark = false }: { className?: string;
 }
 
 // Se inyecta en <head>: evita el destello de tema incorrecto al cargar.
-export const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})();`;
+export const themeInitScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark')}catch(e){}})();`;
