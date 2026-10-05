@@ -40,7 +40,6 @@ Se leen al **compilar** (`next build`/`next dev`).
 | `NEXT_PUBLIC_LEGAL_ADDRESS` | Dirección física (si se define, aparece en el aviso y la política). |
 | `NEXT_PUBLIC_CONTACT_EMAIL` / `NEXT_PUBLIC_PRIVACY_EMAIL` | Correos de contacto y de privacidad. |
 | `NEXT_PUBLIC_SITE_URL` | URL pública (imagen al compartir en redes). |
-| `NEXT_PUBLIC_SAMPLE_CONTENT` | `false` para ocultar la etiqueta «contenido ilustrativo» cuando el equipo y los testimonios sean reales. |
 
 ## Marca
 
@@ -49,15 +48,15 @@ Colores: **azul `#1d344a`** y **crema `#f9f8e1`** (tomados del logo). La paleta 
 ## Contenido que debes revisar y reemplazar
 
 - **Aviso y política de privacidad** (`src/app/aviso-de-privacidad`, `src/app/privacidad`): están redactados según lo que la plataforma hace (cifrado, cookies, auditoría) pero son un texto general. **Debe revisarlos tu asesor jurídico** (normativa aplicable, plazos de conservación, autoridad de control) antes de operar. Si cambian de forma sustancial, sube `privacyVersion` en `src/lib/site.ts` **y** `PRIVACY_VERSION` en la API.
-- **Equipo y testimonios** (`src/content/team.ts`, `src/content/testimonials.ts`): son **ejemplos ilustrativos**. Sustitúyelos por personas y opiniones reales (con autorización escrita) y luego pon `NEXT_PUBLIC_SAMPLE_CONTENT=false`. Los testimonios usan iniciales y no fotos de archivo a propósito: una foto de una persona real junto a una cita implica que esa persona avala al despacho.
-- **Fotos del equipo:** copia el archivo a `public/images/team/` y pon la ruta en `photo`. Usa solo fotos del equipo real (o con licencia y autorización de imagen que permita ese uso).
+- **Equipo y testimonios:** se editan desde el panel, en **Contenido del sitio** (solo superadmin): textos, nombres, fotos, orden y publicar/ocultar, con cambios visibles al instante en la landing. Las personas deben ser **reales y haber autorizado por escrito** publicar su nombre, opinión y foto: al crear algo, cambiar un texto, un nombre o una foto, o reemplazar un ejemplo, el panel exige confirmarlo y la API deja constancia de quién y cuándo. Mientras haya contenido de ejemplo publicado, la web lo rotula como «ilustrativo»; si la API aún no tiene contenido, se muestra el de respaldo de `src/content/`.
+- **Fotos:** se suben desde el panel; se recortan en cuadrado, se reducen a 512 px y se re-codifican (sin datos EXIF). Usa solo fotos del equipo real o con licencia y autorización de imagen que permita ese uso.
 
 ## Estructura
 
 ```
 src/app/            rutas (landing, auth, dashboard, admin, páginas legales)
 src/components/     UI compartida (ui, charts, LineChart, Brand, Shell, …)
-src/content/        equipo y testimonios (reemplazables)
+src/content/        contenido de respaldo (equipo y testimonios) si la API aún no tiene el propio
 src/lib/            api (con renovación de sesión), auth, formato, tipos, hooks
 public/brand/       logos optimizados
 brand/              logos originales y notas de marca

@@ -114,3 +114,9 @@ export const AUDIT_LABELS: Record<string, string> = {
   INTEREST_CREATED: 'Interés en oportunidad', INTEREST_STATUS: 'Interés atendido', NOTIFICATION_SENT: 'Alerta manual enviada', REPORT_EXPORTED: 'Reporte exportado',
 };
 export const auditLabel = (action: string) => AUDIT_LABELS[action] ?? action;
+
+// ───────────── Contenido del sitio (panel del superadmin) ─────────────
+type ContentMeta = { photoUrl: string | null; published: boolean; isSample: boolean; authorized: boolean; authorizedAt: string | null; authorizedBy: string | null; sortOrder: number };
+export type AdminTeamMember = ContentMeta & { id: string; name: string; role: string; bio: string };
+export type AdminTestimonial = ContentMeta & { id: string; quote: string; author: string; kind: string };
+export type AdminContent = { team: AdminTeamMember[]; testimonials: AdminTestimonial[] };

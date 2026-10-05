@@ -7,9 +7,11 @@ import { LandingPreview } from '@/components/LandingPreview';
 import { Reveal } from '@/components/Reveal';
 import { SiteFooter } from '@/components/LegalPage';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { team } from '@/content/team';
-import { testimonials } from '@/content/testimonials';
+import { getSiteContent } from '@/lib/content';
 import { site } from '@/lib/site';
+
+// Equipo y testimonios vienen de la API (se refrescan solos cada 30 s y al instante al guardar desde el panel).
+export const revalidate = 30;
 
 const STEPS = [
   { icon: UploadCloud, title: 'Carga tus documentos', text: 'Identidad, soportes bancarios, documentos legales y comprobantes, organizados por categoría.' },
@@ -34,12 +36,13 @@ const INVESTOR_POINTS = [
 const NAV = [
   { href: '#como-funciona', label: 'Cómo funciona' },
   { href: '#inversion', label: 'Inversión' },
-  { href: '#equipo', label: 'Equipo' },
-  { href: '#testimonios', label: 'Testimonios' },
+  { href: '#equipo', label: 'Equipo', needs: 'team' as const },
+  { href: '#testimonios', label: 'Testimonios', needs: 'testimonials' as const },
 ];
 
-function SampleBadge() {
-  if (!site.showSampleNotice) return null;
+/** Se muestra solo mientras haya contenido de ejemplo publicado: el sitio nunca presenta ejemplos como si fueran reales. */
+function SampleBadge({ show }: { show: boolean }) {
+  if (!show) return null;
   return (
     <p className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600">
       <Info className="h-3.5 w-3.5 shrink-0" aria-hidden /> Contenido ilustrativo de ejemplo
@@ -47,14 +50,18 @@ function SampleBadge() {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const { team, testimonials } = await getSiteContent();
+  const NAV_ITEMS = NAV.filter((n) => !n.needs || (n.needs === 'team' ? team.length : testimonials.length) > 0);
+  const teamHasSample = team.some((m) => m.isSample);
+  const testimonialsHaveSample = testimonials.some((t) => t.isSample);
   return (
     <div>
       <header className="header-scroll anim-fade sticky top-0 z-40 border-b border-slate-200 bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
           <Link href="/" className="min-w-0" aria-label={`${site.name}: inicio`}><BrandInline /></Link>
           <nav aria-label="Secciones" className="hidden items-center gap-1 md:flex">
-            {NAV.map((n) => <a key={n.href} href={n.href} className="rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-navy-900">{n.label}</a>)}
+            {NAV_ITEMS.map((n) => <a key={n.href} href={n.href} className="rounded-lg px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-100 hover:text-navy-900">{n.label}</a>)}
           </nav>
           <div className="flex items-center gap-1">
             <ThemeToggle />
@@ -63,7 +70,7 @@ export default function Home() {
             <details className="relative md:hidden">
               <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 [&::-webkit-details-marker]:hidden" aria-label="Menú de secciones"><Menu className="h-5 w-5" aria-hidden /></summary>
               <div className="anim-menu absolute right-0 top-12 w-56 rounded-xl border border-slate-200 bg-surface p-2 shadow-lg">
-                {NAV.map((n) => <a key={n.href} href={n.href} className="block rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100">{n.label}</a>)}
+                {NAV_ITEMS.map((n) => <a key={n.href} href={n.href} className="block rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-100">{n.label}</a>)}
                 <Link href="/login" className="mt-1 block rounded-lg border-t border-slate-100 px-3 py-2.5 text-sm font-medium text-navy-700 hover:bg-slate-100 sm:hidden">Ingresar</Link>
               </div>
             </details>
@@ -157,17 +164,18 @@ export default function Home() {
         </div>
       </section>
 
+      {team.length > 0 && (
       <section id="equipo" className="scroll-mt-20 border-y border-slate-200 bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 lg:py-20">
           <Reveal>
             <h2 className="text-2xl font-semibold sm:text-3xl">Un equipo que te acompaña</h2>
             <p className="mx-auto mt-3 max-w-2xl text-slate-600">Abogados dedicados a la recuperación de capital y a mantenerte informado en cada etapa.</p>
-            <SampleBadge />
+            <SampleBadge show={teamHasSample} />
           </Reveal>
           <ul className="mt-10 grid gap-5 text-left sm:grid-cols-2 lg:grid-cols-4">
             {team.map((m, i) => (
-              <Reveal as="li" key={m.name} delay={(i % 4) * 90} className="card-lift rounded-xl border border-slate-200 bg-paper p-5">
-                <Avatar name={m.name} src={m.photo} />
+              <Reveal as="li" key={m.id} delay={(i % 4) * 90} className="card-lift rounded-xl border border-slate-200 bg-paper p-5">
+                <Avatar name={m.name} src={m.photoUrl ?? undefined} />
                 <h3 className="mt-4 text-base font-semibold">{m.name}</h3>
                 <p className="text-sm font-medium text-navy-600">{m.role}</p>
                 <p className="mt-2 text-sm text-slate-600">{m.bio}</p>
@@ -176,24 +184,27 @@ export default function Home() {
           </ul>
         </div>
       </section>
+      )}
 
+      {testimonials.length > 0 && (
       <section id="testimonios" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 text-center sm:px-6 lg:py-20">
         <Reveal>
           <h2 className="text-2xl font-semibold sm:text-3xl">Lo que valoran quienes confían en nosotros</h2>
-          <SampleBadge />
+          <SampleBadge show={testimonialsHaveSample} />
         </Reveal>
         <ul className="mt-10 grid gap-5 text-left md:grid-cols-3">
           {testimonials.map((t, i) => (
-            <Reveal as="li" key={t.quote} delay={i * 100} className="card card-lift flex flex-col p-6">
+            <Reveal as="li" key={t.id} delay={i * 100} className="card card-lift flex flex-col p-6">
               <blockquote className="flex-1 text-slate-700">“{t.quote}”</blockquote>
               <figcaption className="mt-5 flex items-center gap-3">
-                <Avatar name={t.author} className="h-10 w-10 text-sm" />
+                <Avatar name={t.author} src={t.photoUrl ?? undefined} className="h-10 w-10 text-sm" />
                 <span className="text-sm"><span className="block font-semibold text-slate-900">{t.author}</span><span className="text-slate-500">{t.kind}</span></span>
               </figcaption>
             </Reveal>
           ))}
         </ul>
       </section>
+      )}
 
       <section className="border-t border-slate-200 bg-surface">
         <Reveal className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">

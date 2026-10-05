@@ -4,8 +4,6 @@ export const site = {
   name: process.env.NEXT_PUBLIC_SITE_NAME ?? 'Imperial Law Group',
   tagline: 'Recuperación de capital con respaldo jurídico',
   supportEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'contacto@imperiallawgroup.example',
-  // Muestra la etiqueta de "contenido ilustrativo" junto al equipo y los testimonios. Ponla en 'false' cuando el contenido sea real.
-  showSampleNotice: process.env.NEXT_PUBLIC_SAMPLE_CONTENT !== 'false',
   currency: 'USD',
   locale: 'es-US',
   legal: {
