@@ -65,15 +65,15 @@ export function Shell({ nav, area, alertsHref, children }: { nav: NavItem[]; are
 
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-night-950/60" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85vw]">
+          <div className="anim-fade absolute inset-0 bg-night-950/60" onClick={() => setOpen(false)} />
+          <aside className="anim-slide absolute inset-y-0 left-0 w-72 max-w-[85vw]">
             {sidebar}
             <button onClick={() => setOpen(false)} className="absolute right-2 top-3 rounded-md p-1 text-night-200 hover:bg-night-800" aria-label="Cerrar menú"><X className="h-5 w-5" /></button>
           </aside>
         </div>
       )}
 
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-surface/90 px-4 py-3 backdrop-blur lg:px-8">
+      <header className="header-scroll sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-surface/90 px-4 py-3 backdrop-blur lg:px-8">
         <button onClick={() => setOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="Abrir menú"><Menu className="h-5 w-5" /></button>
         <p className="hidden text-sm text-slate-500 lg:block">Hola, <span className="font-medium text-slate-800">{user?.fullName.split(' ')[0]}</span></p>
         <div className="flex items-center gap-1">
@@ -85,7 +85,7 @@ export function Shell({ nav, area, alertsHref, children }: { nav: NavItem[]; are
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6 lg:px-8 lg:py-8">{children}</main>
+      <main key={pathname} className="anim-page mx-auto max-w-6xl px-4 py-6 lg:px-8 lg:py-8">{children}</main>
     </div>
   );
 }

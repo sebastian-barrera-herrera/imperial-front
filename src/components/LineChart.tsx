@@ -166,10 +166,10 @@ export function LineChart({ series, format, axisFormat, ariaLabel, height }: {
               <text key={i} x={px(t)} y={h - 8} textAnchor={i === 0 ? 'start' : i === xTicks.length - 1 ? 'end' : 'middle'} className="fill-slate-500 text-[11px]">{axisDay(t, shortSpan)}</text>
             ))}
             {series.filter((s) => s.area).map((s) => (
-              <path key={`a-${s.id}`} d={`${pathFor(s)} L${px(time(s.points[s.points.length - 1].x)).toFixed(1)},${top + plotH} L${px(time(s.points[0].x)).toFixed(1)},${top + plotH} Z`} className={COLOR[s.color].fill} />
+              <path key={`a-${s.id}`} d={`${pathFor(s)} L${px(time(s.points[s.points.length - 1].x)).toFixed(1)},${top + plotH} L${px(time(s.points[0].x)).toFixed(1)},${top + plotH} Z`} className={cn(COLOR[s.color].fill, 'chart-area')} />
             ))}
             {series.map((s) => (
-              <path key={s.id} d={pathFor(s)} className={cn('fill-none', COLOR[s.color].stroke)} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+              <path key={s.id} d={pathFor(s)} pathLength={1} className={cn('draw fill-none', COLOR[s.color].stroke)} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
             ))}
             {activePx !== null && <line x1={activePx} x2={activePx} y1={top} y2={top + plotH} className="stroke-slate-400" strokeWidth={1} />}
             {series.map((s) => {

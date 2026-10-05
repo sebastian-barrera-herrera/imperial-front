@@ -12,6 +12,7 @@ El navegador solo habla con Next: `/api/*` se reenvía a la API mediante `rewrit
 - **Área de clientes:** perfil, documentos (carga con progreso), solicitudes de desembolso, seguimiento de casos con línea de tiempo, alertas en tiempo real, capital e inversión con simulador, **Mi portafolio** y configuración.
 - **Panel interno:** KPIs y gráficos, clientes, validación de documentos, desembolsos, casos, alertas, capital (oportunidades, valoraciones, inversiones y rescates), usuarios y roles, reportes CSV y auditoría.
 - **Portafolio del inversionista:** valor actual, ganancia, rendimiento anualizado, gráfico interactivo (puntero, táctil y teclado, rangos 1M–Todo, tabla equivalente), distribución, posiciones con tendencia y ficha de rendimiento por oportunidad.
+- **Animaciones sutiles:** entrada escalonada de la portada, aparición al hacer scroll (`src/components/Reveal.tsx`), líneas de los gráficos que se dibujan, tarjetas que se elevan al pasar el cursor, cabecera que gana sombra y transición entre páginas del panel. Solo CSS más un `IntersectionObserver`; sin dependencias. Se desactivan con «reducir movimiento» del sistema y, sin JavaScript, todo el contenido se ve igual. Los estilos están al final de `src/app/globals.css`.
 - **Tema claro / oscuro / del sistema** sin parpadeo, y diseño responsive de 320 px a escritorio (las tablas se apilan como tarjetas en móvil).
 - **Accesibilidad:** verificada con axe (WCAG A/AA) en ambos temas; navegación por teclado, `aria-live` en avisos y gráficos con tabla equivalente.
 

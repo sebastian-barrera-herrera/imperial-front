@@ -160,10 +160,10 @@
 }
 
 @layer components {
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-brand text-white hover:bg-brand-hover; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition duration-200 motion-safe:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-brand text-white hover:bg-brand-hover hover:shadow-md; }
   .btn-gold { @apply btn bg-accent text-night-900 hover:bg-gold-400; }
-  .btn-cream { @apply btn bg-cream text-night-900 hover:bg-white; }
+  .btn-cream { @apply btn bg-cream text-night-900 hover:bg-white hover:shadow-lg hover:shadow-black/20; }
   .btn-outline { @apply btn border border-slate-300 bg-surface text-slate-700 hover:bg-slate-50; }
   .btn-danger { @apply btn bg-[#dc2626] text-white hover:bg-[#b91c1c]; }
   .btn-ghost { @apply btn text-slate-600 hover:bg-slate-100; }
@@ -206,4 +206,61 @@
   .legal .rtable td::before { max-width: none; }
   .legal .rtable tr { padding: 0.75rem 1rem; }
   .legal .rtable tbody tr + tr { border-top: 1px solid rgb(var(--slate-200)); }
+}
+
+/* ───────────── Animación ─────────────
+   Breve y sutil. Las entradas usan `backwards` (no `forwards`): al terminar, el elemento vuelve a su estilo normal y no queda
+   ningún `transform` aplicado (que alteraría el posicionamiento de modales y menús). Todo se anula con «reducir movimiento». */
+:root { --ease-out: cubic-bezier(0.22, 1, 0.36, 1); }
+html { scroll-behavior: smooth; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.6); } }
+@keyframes menu-pop { from { opacity: 0; transform: translateY(-6px) scale(0.97); } }
+@keyframes slide-in { from { transform: translateX(-100%); } }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 rgb(249 248 225 / 0.5); } 100% { box-shadow: 0 0 0 10px rgb(249 248 225 / 0); } }
+@keyframes drift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(-5%, 7%, 0) scale(1.08); } }
+@keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes header-shadow { from { box-shadow: 0 0 0 0 rgb(15 31 44 / 0); } to { box-shadow: 0 8px 24px -14px rgb(15 31 44 / 0.35); } }
+
+.anim-rise { animation: rise 0.75s var(--ease-out) backwards; animation-delay: var(--d, 0ms); }
+.anim-page { animation: page-in 0.4s var(--ease-out) backwards; }
+.anim-fade { animation: fade 0.5s ease-out backwards; animation-delay: var(--d, 0ms); }
+.anim-pop { animation: pop 0.5s var(--ease-out) backwards; animation-delay: var(--d, 0ms); }
+.anim-menu { animation: menu-pop 0.18s var(--ease-out) backwards; transform-origin: top right; }
+.anim-slide { animation: slide-in 0.28s var(--ease-out) backwards; }
+.anim-ring { animation: ring 2.4s ease-out infinite; }
+
+/* Resplandor lento detrás de las portadas oscuras */
+.glow { position: absolute; inset: -20% -10% auto auto; width: 70%; aspect-ratio: 1; border-radius: 9999px; pointer-events: none; animation: drift 22s ease-in-out infinite;
+  background: radial-gradient(closest-side, rgb(220 187 108 / 0.16), rgb(83 131 178 / 0.07) 55%, transparent 75%); }
+
+/* Aparición al hacer scroll (ver components/Reveal.tsx) */
+.reveal, .card-lift.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); transition-delay: var(--d, 0ms); }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Gráficos: la línea se dibuja y el área aparece; si el gráfico está bajo el pliegue, espera a que se vea */
+.draw { stroke-dasharray: 1; animation: draw 1.4s var(--ease-out) 0.15s backwards; }
+.chart-area { animation: fade 1s ease-out 0.5s backwards; }
+.reveal:not(.is-visible) .draw, .reveal:not(.is-visible) .chart-area { animation-play-state: paused; }
+
+/* Tarjetas que se elevan al pasar el cursor (solo en dispositivos con puntero) */
+@media (hover: hover) {
+  .card-lift { transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), border-color 0.3s; }
+  .card-lift:hover { transform: translateY(-4px); box-shadow: 0 14px 30px -16px rgb(15 31 44 / 0.35); border-color: rgb(var(--navy-300)); }
+}
+
+/* La cabecera gana sombra al bajar (solo navegadores con animaciones ligadas al scroll; el resto la deja plana) */
+@supports (animation-timeline: scroll()) {
+  .header-scroll { animation: header-shadow linear both; animation-timeline: scroll(root block); animation-range: 0 90px; }
+}
+
+@media print { .reveal { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, ::before, ::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+  .card-lift:hover { transform: none; }
 }
